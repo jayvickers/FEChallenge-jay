@@ -1,13 +1,13 @@
 import React from 'react';
 import {
-  Content,
   Header,
   HeaderContainer,
   HeaderName,
   SkipToContent
 } from 'carbon-components-react';
 import './App.scss';
-import DisplayTable from './components/DisplayTable/DisplayTable';
+import TableContainer from './containers/TableContainer';
+
 
 const App = () => {
   return (
@@ -21,9 +21,7 @@ const App = () => {
                 React Skeleton App
               </HeaderName>
             </Header>
-            <Content id="main-content">
-              <DisplayTable />
-            </Content>
+            <TableContainer />
           </div>
         )}
       />
