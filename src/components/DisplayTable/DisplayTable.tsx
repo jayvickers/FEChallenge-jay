@@ -1,6 +1,5 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
-import { IFormattedDataTableRow } from '../../types/tableTypes';
+import { IFormattedDataTableRow, IHeaderRow } from '../../types/tableTypes';
 import {
   Button,
   DataTable,
@@ -23,20 +22,17 @@ import {
   TableExpandHeader,
   TableExpandRow,
   TableCell,
+  ToastNotification
 } from 'carbon-components-react';
 
-//TODO: type out the header
-//TODO: create expanded row component
-
-
+import { CheckmarkFilled16, TrashCan32 } from '@carbon/icons-react';
 interface IDisplayTableProps {
-  headers: any,
+  deleteRows: (deletedRows: IFormattedDataTableRow[]) => void;
+  headers: IHeaderRow[],
   rows: IFormattedDataTableRow[]
 }
 
-
 const DisplayTable: React.FC<IDisplayTableProps> = (props: IDisplayTableProps) => {
-
   //TODO: type out datatable props here or see if we even need them
   return (
     <DataTable rows={props.rows} headers={props.headers} isSortable>
@@ -58,13 +54,12 @@ const DisplayTable: React.FC<IDisplayTableProps> = (props: IDisplayTableProps) =
           description="With batch actions"
           {...getTableContainerProps()}>
           <TableToolbar {...getToolbarProps()}>
-            <TableBatchActions {...getBatchActionProps()}>
+            <TableBatchActions {...getBatchActionProps()} shouldShowBatchActions={selectedRows.length > 0}>
               <TableBatchAction
                 tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
-                // renderIcon={<Button kind="danger">delete</Button>}
-                //TODO: figure out delete icon
-                //TODO: delete functionality
-                onClick={() => { }}>
+                renderIcon={TrashCan32}
+                iconDescription="Delete Icon"
+                onClick={() => props.deleteRows(selectedRows)}>
                 Delete
               </TableBatchAction>
             </TableBatchActions>
@@ -85,7 +80,7 @@ const DisplayTable: React.FC<IDisplayTableProps> = (props: IDisplayTableProps) =
               <TableRow>
                 <TableExpandHeader />
                 <TableSelectAll {...getSelectionProps()} />
-                {headers.map((header: any, i: number) => (
+                {headers.map((header: IHeaderRow, i: number) => (
                   <TableHeader key={i} {...getHeaderProps({ header })}>
                     {header.header}
                   </TableHeader>
@@ -100,7 +95,14 @@ const DisplayTable: React.FC<IDisplayTableProps> = (props: IDisplayTableProps) =
                     {row.cells.map((cell: IFormattedDataTableRow) => (
                       /* TODO: use a date obect for created date */
                       /* TODO: add someting for is_supported */
-                      <TableCell key={cell.id}>{cell.value}</TableCell>
+                      <TableCell key={cell.id}>
+                        {
+                          cell.value === true ? <CheckmarkFilled16 className="table-cell__supported" /> : cell.value
+                        }
+
+                        {/* {cell.value} */}
+
+                      </TableCell>
                     ))}
                   </TableExpandRow>
                   <TableExpandedRow

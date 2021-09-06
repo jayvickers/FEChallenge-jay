@@ -4,15 +4,18 @@
   "description": "Skeleton app for React coding challenge",
   "main": "src/index.tsx",
   "scripts": {
-    "start": "webpack serve --config webpack.config.js --mode development --hot"
+    "start": "webpack serve --config webpack.config.js --mode development --hot",
+    "test": "jest --config ./jest.config.js"
   },
   "author": "Ashvin.Warrier@ibm.com",
   "license": "ISC",
   "dependencies": {
-    "@babel/core": "^7.15.0",
+    "@babel/core": "^7.15.5",
     "@babel/plugin-proposal-class-properties": "^7.14.5",
-    "@babel/preset-env": "^7.15.0",
+    "@babel/preset-env": "^7.15.4",
     "@babel/preset-react": "^7.14.5",
+    "@babel/preset-typescript": "^7.15.0",
+    "@babel/plugin-transform-runtime": "^7.15.0",
     "@carbon/grid": "^10.33.0",
     "@carbon/icons": "^10.37.0",
     "@carbon/themes": "^10.40.0",
@@ -20,6 +23,7 @@
     "@types/carbon__icons-react": "^10.31.2",
     "@types/react-dom": "^17.0.9",
     "@types/react-router-dom": "^5.1.8",
+    "babel-jest": "^27.1.0",
     "babel-loader": "^8.2.2",
     "carbon-components": "^10.41.0",
     "carbon-components-react": "^7.41.0",
@@ -38,5 +42,11 @@
     "webpack": "^5.51.1",
     "webpack-cli": "^4.8.0",
     "webpack-dev-server": "^4.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^12.0.0",
+    "@types/jest": "^27.0.1",
+    "jest": "^27.1.0",
+    "ts-jest": "^27.0.5"
   }
 }

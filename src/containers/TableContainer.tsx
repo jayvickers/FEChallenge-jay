@@ -1,27 +1,34 @@
 
 import React, { useEffect, useState } from 'react';
 import DisplayTable from '../components/DisplayTable/DisplayTable';
+import DeleteModal from '../components/DeleteModal/DeleteModal';
 import { Content, DataTableSkeleton, Pagination } from 'carbon-components-react';
-import { IPaginationChange, IFormattedDataTableRow, IFormattedProductRow, TSplitRowData } from '../types/tableTypes';
-const TableContainer = () => {
-    //TODO: type state here
-    //TODO: type functions
+import { IPaginationChange, IFormattedDataTableRow, IFormattedProductRow, IHeaderRow, TSplitRowData } from '../types/tableTypes';
+import { getData, flattenSplitArray, splitDataIntoPageSize } from '../helpers/helpers';
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+const TableContainer: React.FC<any> = () => {
+    const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+    const [rowsToDelete, setRowsToDelete] = useState<IFormattedDataTableRow[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [page, setPage] = useState<number>(1);
+    const [pageSize, setPageSize] = useState<number>(10);
     const [rows, setRows] = useState<TSplitRowData>([]);
-    const [totalSize, setTotalSize] = useState(0);
+    const [totalSize, setTotalSize] = useState<number>(0);
 
-    const splitDataIntoPageSize = (arr: IFormattedProductRow[], chunkSize: number) => {
-        const res: TSplitRowData = [];
-        for (let i = 0; i < arr.length; i += chunkSize) {
-            const chunk: IFormattedProductRow[] = arr.slice(i, i + chunkSize);
-            res.push(chunk);
-        }
-        return res;
+    //delete row from storage
+    const deleteRows = (deletedRows: IFormattedDataTableRow[]) => {
+        //remove row from state
+        let flattenedRows: IFormattedProductRow[] = flattenSplitArray(rows);
+        flattenedRows = flattenedRows.filter((row) => {
+            return !deletedRows.some(delRow => delRow.id === row.id)
+        });
+
+        //repopulate pagination data
+        setRows(splitDataIntoPageSize(flattenedRows, pageSize));
+        setTotalSize(flattenedRows.length);
     }
 
+    //switch to new page or update pagesize if needed
     const handlePageChange = (e: IPaginationChange) => {
         const newPageNum: number = e.page;
         const newPageSize: number = e.pageSize;
@@ -29,28 +36,16 @@ const TableContainer = () => {
         //changing page size, need to regroup
         if (newPageSize !== pageSize) {
             setPageSize(newPageSize);
-            let flattenedRows: IFormattedProductRow[] = [];
-            for (let i: number = 0; i < rows.length; i++) {
-                flattenedRows = flattenedRows.concat(rows[i]);
-            }
+            let flattenedRows: IFormattedProductRow[] = flattenSplitArray(rows);
             setRows(splitDataIntoPageSize(flattenedRows, newPageSize));
         }
 
         setPage(newPageNum);
     }
 
-    const getData = async () => {
-        let response: Response = await fetch(
-            "https://patch-advisories-dev.mybluemix.net/api/v1/products?fmt=json"
-        );
-        let jsonData: Promise<any> = await response.json();
-        return jsonData;
-    };
-
     useEffect(() => {
-        getData()
+        getData("https://patch-advisories-dev.mybluemix.net/api/v1/products?fmt=json")
             .then((result) => {
-                //TODO: type out json result here
                 let res: IFormattedProductRow[] = result.data;
                 res.forEach((result: IFormattedProductRow) => result.id = result.prod_id);
                 setRows(splitDataIntoPageSize(res, pageSize));
@@ -58,25 +53,36 @@ const TableContainer = () => {
                 setTotalSize(result.data.length);
             })
             .catch((error: Error) => {
-                console.error('Error:', error);
+                console.error('Error getting data:', error);
             });
     }, []);
 
+    /************************/
+    /* MODAL EVENT HANDLERS */
+    /************************/
 
-    // let res: IProductRow[] = [{ "id": "0", "category": "Adobe", "catid": "26", "created_at": "2009-10-22T16:42:47.038Z", "is_supported": true, "list": "advisory-adobe@secintel.ibm.com", "prod_id": "85", "product": "ColdFusion", "vendor": "Adobe", "vendor_id": "43" }];
+    const handleCloseDeleteModal = (confirmDelete: boolean) => {
+        if (confirmDelete) {
+            deleteRows(rowsToDelete);
+        }
+        setDeleteModalOpen(false);
+    }
 
-    const headers = [{ "key": "category", "header": "Category" }, { "key": "created_at", "header": "Created Date" }, { "key": "is_supported", "header": "Supported" }, { "key": "list", "header": "List" }, { "key": "product", "header": "Product" }, { "key": "vendor", "header": "Vendor" }];
+    const handleOpenDeleteModal = (deletedRows: IFormattedDataTableRow[]) => {
+        setRowsToDelete(deletedRows);
+        setDeleteModalOpen(true);
+    }
 
-    // const headers = [{ "key": "name", "header": "Name" }, { "key": "protocol", "header": "Protocol" }, { "key": "port", "header": "Port" }, { "key": "rule", "header": "Rule" }, { "key": "attached_groups", "header": "Attached Groups" }];
-    // const headersSkele = [{ "key": "name2", "header": "a" }, { "key": "name", "header": "Name" }, { "key": "protocol", "header": "Protocol" }, { "key": "port", "header": "Port" }, { "key": "rule", "header": "Rule" }, { "key": "attached_groups", "header": "Attached Groups" }];
+    const headers: IHeaderRow[] = [{ "key": "category", "header": "Category" }, { "key": "created_at", "header": "Created Date" }, { "key": "is_supported", "header": "Supported" }, { "key": "list", "header": "List" }, { "key": "product", "header": "Product" }, { "key": "vendor", "header": "Vendor" }];
 
     return (
         <Content id="main-content">
+            <DeleteModal isOpen={deleteModalOpen} numRows={rowsToDelete.length} handleCloseDeleteModal={handleCloseDeleteModal} />
             {isLoading ?
                 <DataTableSkeleton headers={headers} rowCount={10} />
                 :
                 <>
-                    <DisplayTable rows={rows[page - 1] as IFormattedDataTableRow[]} headers={headers} />
+                    <DisplayTable deleteRows={handleOpenDeleteModal} rows={rows[page - 1] as IFormattedDataTableRow[]} headers={headers} />
                     <Pagination
                         backwardText="Previous page"
                         forwardText="Next page"
@@ -99,6 +105,5 @@ const TableContainer = () => {
         </Content>
     )
 }
-
 
 export default TableContainer;

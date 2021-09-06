@@ -56,21 +56,13 @@ export interface IFormattedDataTableRow extends IFormattedProductRow {
     disabled?: boolean | undefined;
     isExpanded?: boolean | undefined;
     isSelected?: boolean | undefined;
-    value?: string | undefined;
+    value: string | boolean;
     cells: [];
 }
 
 export interface IHeaderRow {
-    category: string;
-    catid: string;
-    created_at: string;
-    id: string | null,
-    is_supported: boolean,
-    list: string;
-    prod_id: string;
-    product: string;
-    vendor: string;
-    vendor_id: string;
+    key: string,
+    header: string
 }
 
 export interface IPaginationChange {
