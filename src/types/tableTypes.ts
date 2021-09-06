@@ -37,3 +37,46 @@ export type TTickerType = "PI_XBTUSD" | "PI_ETHUSD";
 export type TDataFeed = "book_ui_1" | "book_ui_1_snapshot";
 
 export type TSubscribeEventOptions = "subscribe" | "unsubscribe";
+
+export interface IFormattedProductRow {
+    category: string;
+    catid: string;
+    created_at: string;
+    id: string | null,
+    is_supported: boolean,
+    list: string;
+    prod_id: string;
+    product: string;
+    vendor: string;
+    vendor_id: string;
+}
+
+export interface IFormattedDataTableRow extends IFormattedProductRow {
+    id: string;
+    disabled?: boolean | undefined;
+    isExpanded?: boolean | undefined;
+    isSelected?: boolean | undefined;
+    value?: string | undefined;
+    cells: [];
+}
+
+export interface IHeaderRow {
+    category: string;
+    catid: string;
+    created_at: string;
+    id: string | null,
+    is_supported: boolean,
+    list: string;
+    prod_id: string;
+    product: string;
+    vendor: string;
+    vendor_id: string;
+}
+
+export interface IPaginationChange {
+    page: number;
+    pageSize: number;
+}
+
+export type TSplitRowData = IFormattedProductRow[][];
+export type TFormattedProductRow = IFormattedProductRow[][];

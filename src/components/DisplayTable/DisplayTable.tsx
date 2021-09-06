@@ -1,5 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
+import { IFormattedDataTableRow } from '../../types/tableTypes';
 import {
   Button,
   DataTable,
@@ -24,12 +25,21 @@ import {
   TableCell,
 } from 'carbon-components-react';
 
-const DisplayTable = (): JSX.Element => {
-  const rows = [{ "id": "a", "name": "Load Balancer 3", "protocol": "HTTP", "port": 3000, "rule": "Round robin", "attached_groups": "Kevin’s VM Groups" }, { "id": "b", "name": "Load Balancer 1", "protocol": "HTTP", "port": 443, "rule": "Round robin", "attached_groups": "Maureen’s VM Groups" }, { "id": "c", "name": "Load Balancer 2", "protocol": "HTTP", "port": 80, "rule": "DNS delegation", "attached_groups": "Andrew’s VM Groups" }, { "id": "d", "name": "Load Balancer 6", "protocol": "HTTP", "port": 3000, "rule": "Round robin", "attached_groups": "Marc’s VM Groups" }, { "id": "e", "name": "Load Balancer 4", "protocol": "HTTP", "port": 443, "rule": "Round robin", "attached_groups": "Mel’s VM Groups" }, { "id": "f", "name": "Load Balancer 5", "protocol": "HTTP", "port": 80, "rule": "DNS delegation", "attached_groups": "Ronja’s VM Groups" }];
-  const headers = [{ "key": "name", "header": "Name" }, { "key": "protocol", "header": "Protocol" }, { "key": "port", "header": "Port" }, { "key": "rule", "header": "Rule" }, { "key": "attached_groups", "header": "Attached Groups" }];
+//TODO: type out the header
+//TODO: create expanded row component
 
+
+interface IDisplayTableProps {
+  headers: any,
+  rows: IFormattedDataTableRow[]
+}
+
+
+const DisplayTable: React.FC<IDisplayTableProps> = (props: IDisplayTableProps) => {
+
+  //TODO: type out datatable props here or see if we even need them
   return (
-    <DataTable rows={rows} headers={headers}>
+    <DataTable rows={props.rows} headers={props.headers} isSortable>
       {({
         rows,
         headers,
@@ -52,10 +62,15 @@ const DisplayTable = (): JSX.Element => {
               <TableBatchAction
                 tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
                 // renderIcon={<Button kind="danger">delete</Button>}
+                //TODO: figure out delete icon
+                //TODO: delete functionality
                 onClick={() => { }}>
                 Delete
               </TableBatchAction>
             </TableBatchActions>
+
+
+            {/* //TODO: write custom search 
             <TableToolbarContent>
               <TableToolbarSearch
                 persistent
@@ -63,16 +78,14 @@ const DisplayTable = (): JSX.Element => {
                 onChange={onInputChange}
               />
 
-            </TableToolbarContent>
+            </TableToolbarContent> */}
           </TableToolbar>
           <Table {...getTableProps()}>
             <TableHead>
               <TableRow>
                 <TableExpandHeader />
-
                 <TableSelectAll {...getSelectionProps()} />
-
-                {headers.map((header: any, i: any) => (
+                {headers.map((header: any, i: number) => (
                   <TableHeader key={i} {...getHeaderProps({ header })}>
                     {header.header}
                   </TableHeader>
@@ -80,24 +93,23 @@ const DisplayTable = (): JSX.Element => {
               </TableRow>
             </TableHead>
             <TableBody>
-
-
-
-              {rows.map((row: any, i: any) => (
+              {rows.map((row: IFormattedDataTableRow, i: number) => (
                 <React.Fragment key={row.id}>
                   <TableExpandRow {...getRowProps({ row })}>
                     <TableSelectRow {...getSelectionProps({ row })} />
-                    {row.cells.map((cell: any) => (
+                    {row.cells.map((cell: IFormattedDataTableRow) => (
+                      /* TODO: use a date obect for created date */
+                      /* TODO: add someting for is_supported */
                       <TableCell key={cell.id}>{cell.value}</TableCell>
                     ))}
                   </TableExpandRow>
                   <TableExpandedRow
                     colSpan={headers.length + 2}
                     className="demo-expanded-td">
-                    {row.cells.map((cell: any) => (
-                      <input type="text" />
+                    {row.cells.map((cell: IFormattedDataTableRow, index: number) => (
+                      //TODO: update functionality
+                      <input key={row.id + index} type="text" />
                     ))}
-
                   </TableExpandedRow>
                 </React.Fragment>
               ))}

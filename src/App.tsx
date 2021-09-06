@@ -8,17 +8,17 @@ import {
 import './App.scss';
 import TableContainer from './containers/TableContainer';
 
-
+//TODO: BEM names
 const App = () => {
   return (
     <div>
       <HeaderContainer
         render={() => (
           <div className="bx--grid bx--grid--full-width landing-page">
-            <Header aria-label="React Skeleton App" className="landing-page__heading">
+            <Header aria-label="JSON Data Table Display App" className="landing-page__heading">
               <SkipToContent />
               <HeaderName href="/" prefix="IBM">
-                React Skeleton App
+                JSON Data Table Display
               </HeaderName>
             </Header>
             <TableContainer />

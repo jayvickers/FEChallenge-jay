@@ -12,4 +12,9 @@ $feature-flags: (ui-shell: true);
 
 #main-content {
   background-color: #f4f4f4;
+
+}
+
+.bx--data-table th.bx--table-expand + .bx--table-column-checkbox, .bx--data-table td.bx--table-expand + .bx--table-column-checkbox {
+  padding-right: 1rem;
 }
