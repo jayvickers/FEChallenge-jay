@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { IFormattedDataTableRow, IHeaderRow, IRowState, TCell, TSplitRowData, IFormattedProductRow } from '../../types/tableTypes';
+import { IFormattedDataTableRow, IHeaderRow, IRowState, TCell } from '../../types/tableTypes';
 import UpdateRow from '../UpdateRow/UpdateRow';
 import {
   DataTable,
