@@ -20,16 +20,36 @@ $feature-flags: (ui-shell: true);
 
 .table-cell {
   &__checkmark {
-
     &.--supported {
       fill: $inverse-support-02;
     }
-
     &.--not-supported {
       fill: $inverse-support-01;
-    }
-    
-    
+    }  
+  }
+}
+
+.landing-page-content {
+  &__title-container {
+    height: 16rem;
+    flex-direction: column;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    background-color: #000;
+    border-bottom: 1px solid #393939;
+    color: #fff;
+  } 
+  
+  &__welcome-text {
+    text-align: center;
+    margin-top: 2.5rem;
+  }
+}
+
+.title-container {
+  &__title {
+    margin: 0 0 1rem 20%;
   }
 }
 

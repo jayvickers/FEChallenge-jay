@@ -6,12 +6,14 @@ module.exports = {
   output: {
     path: path.join(__dirname, '/public'),
     filename: 'build/[name].bundle.js',
-    chunkFilename: 'build/[name].bundle.js'
+    chunkFilename: 'build/[name].bundle.js',
+    publicPath: '/'
   },
   devtool: "eval-cheap-module-source-map",
   devServer: {
     port: 6002,
-    open: true
+    open: true,
+    historyApiFallback: true
   },
   module: {
     rules: [
