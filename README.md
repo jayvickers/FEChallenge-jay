@@ -13,7 +13,7 @@ I wanted to use this readme to discuss some things that may not be totally evide
 - Routing is achieved using React Router, this is a very simple implementation and the landing page is really just there to show that I can use React Router and that I have experience using it in the past.
 
 ## Usage
-- startup scripts are unchanged, `npm i` followed by `npm run start`
+- startup scripts are unchanged, `npm i` followed by `npm start`
 
 ## Next Steps
 I did try to respect the time limit of this project, as such I limited my dev time to the recommended 6 hour range. However I thought that I would list things here that I would implement into this solution if the time range were longer.
