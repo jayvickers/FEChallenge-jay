@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react';
 import DisplayTable from '../components/DisplayTable/DisplayTable';
 import DeleteModal from '../components/DeleteModal/DeleteModal';
 import { Content, DataTableSkeleton, Pagination } from 'carbon-components-react';
-import { IPaginationChange, IFormattedDataTableRow, IFormattedProductRow, IHeaderRow, TSplitRowData } from '../types/tableTypes';
+import { IPaginationChange, IFormattedDataTableRow, IFormattedProductRow, IHeaderRow, IRowState, TSplitRowData } from '../types/tableTypes';
 import { getData, flattenSplitArray, splitDataIntoPageSize } from '../helpers/helpers';
 
 const TableContainer: React.FC<any> = () => {
     const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
     const [rowsToDelete, setRowsToDelete] = useState<IFormattedDataTableRow[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [page, setPage] = useState<number>(1);
+    const [pageNum, setPageNum] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
     const [rows, setRows] = useState<TSplitRowData>([]);
     const [totalSize, setTotalSize] = useState<number>(0);
@@ -24,8 +24,32 @@ const TableContainer: React.FC<any> = () => {
         });
 
         //repopulate pagination data
-        setRows(splitDataIntoPageSize(flattenedRows, pageSize));
+        const splitRows: TSplitRowData = splitDataIntoPageSize(flattenedRows, pageSize);
+
+        setRows(splitRows);
+        let currPageIdx: number = pageNum;
+        if (currPageIdx > splitRows.length) {
+            currPageIdx = splitRows.length;
+        }
+        setPageNum(currPageIdx);
         setTotalSize(flattenedRows.length);
+    }
+
+    //update row with new vals
+    const updateStorage = (rowId: string, newVals: IRowState[]) => {
+        let updatedRows: TSplitRowData = [...rows];
+        let rowIdx: number = rows[pageNum - 1].findIndex((row) => row.prod_id === rowId);
+        let pageToUpdate: IFormattedProductRow[] = updatedRows[pageNum - 1];
+        let rowToUpdate: IFormattedProductRow = pageToUpdate[rowIdx];
+
+        rowToUpdate.category = newVals[0].value as string;
+        rowToUpdate.is_supported = newVals[2].value as boolean;
+        rowToUpdate.list = newVals[3].value as string;
+        rowToUpdate.product = newVals[4].value as string;
+        rowToUpdate.vendor = newVals[5].value as string;
+        updatedRows[pageNum - 1][rowIdx] = rowToUpdate;
+
+        setRows(updatedRows);
     }
 
     //switch to new page or update pagesize if needed
@@ -37,18 +61,30 @@ const TableContainer: React.FC<any> = () => {
         if (newPageSize !== pageSize) {
             setPageSize(newPageSize);
             let flattenedRows: IFormattedProductRow[] = flattenSplitArray(rows);
-            setRows(splitDataIntoPageSize(flattenedRows, newPageSize));
-        }
+            const splitRows: TSplitRowData = splitDataIntoPageSize(flattenedRows, newPageSize);
 
-        setPage(newPageNum);
+            setRows(splitRows);
+        }
+        setPageNum(newPageNum);
     }
 
+    //initial call to grab data from endpoint
     useEffect(() => {
         getData("https://patch-advisories-dev.mybluemix.net/api/v1/products?fmt=json")
             .then((result) => {
                 let res: IFormattedProductRow[] = result.data;
-                res.forEach((result: IFormattedProductRow) => result.id = result.prod_id);
-                setRows(splitDataIntoPageSize(res, pageSize));
+                res.forEach((result: IFormattedProductRow) => {
+                    //format data for better display
+                    result.id = result.prod_id;
+                    const createdDate = new Date(result.created_at);
+                    result.created_at = createdDate.toLocaleDateString('en-US', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                    });
+                });
+                const splitRows: TSplitRowData = splitDataIntoPageSize(res, pageSize);
+                setRows(splitRows);
                 setIsLoading(false);
                 setTotalSize(result.data.length);
             })
@@ -73,7 +109,14 @@ const TableContainer: React.FC<any> = () => {
         setDeleteModalOpen(true);
     }
 
-    const headers: IHeaderRow[] = [{ "key": "category", "header": "Category" }, { "key": "created_at", "header": "Created Date" }, { "key": "is_supported", "header": "Supported" }, { "key": "list", "header": "List" }, { "key": "product", "header": "Product" }, { "key": "vendor", "header": "Vendor" }];
+    const headers: IHeaderRow[] = [
+        { "key": "category", "header": "Category" },
+        { "key": "created_at", "header": "Created Date" },
+        { "key": "is_supported", "header": "Supported" },
+        { "key": "list", "header": "List" },
+        { "key": "product", "header": "Product" },
+        { "key": "vendor", "header": "Vendor" }
+    ];
 
     return (
         <Content id="main-content">
@@ -82,13 +125,18 @@ const TableContainer: React.FC<any> = () => {
                 <DataTableSkeleton headers={headers} rowCount={10} />
                 :
                 <>
-                    <DisplayTable deleteRows={handleOpenDeleteModal} rows={rows[page - 1] as IFormattedDataTableRow[]} headers={headers} />
+                    <DisplayTable
+                        deleteRows={handleOpenDeleteModal}
+                        rows={rows[pageNum - 1] as IFormattedDataTableRow[]}
+                        headers={headers}
+                        updateStorage={updateStorage} />
+
                     <Pagination
                         backwardText="Previous page"
                         forwardText="Next page"
                         itemsPerPageText="Items per page:"
                         onChange={(e) => handlePageChange(e)}
-                        page={page}
+                        page={pageNum}
                         pageNumberText="Page Number"
                         pageSize={pageSize}
                         pageSizes={[
