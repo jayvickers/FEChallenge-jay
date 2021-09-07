@@ -22,6 +22,7 @@ I did try to respect the time limit of this project, as such I limited my dev ti
   - I used React Testing Library for this project to help me quickly test helper functions, but given more time I would add complex render tests.
 - More mobile support.
   - I'm not aware of how supported mobile views are with the projects that this team works on, however given more time I would add some custom media queries to help things look cleaner on smaller screen sizes.
+  
 
 
 **Thanks again for your consideration!** 
