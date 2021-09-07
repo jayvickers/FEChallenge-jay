@@ -8,7 +8,6 @@ import {
 import './App.scss';
 import TableContainer from './containers/TableContainer';
 
-//TODO: BEM names
 const App = () => {
   return (
     <div>

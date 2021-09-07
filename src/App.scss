@@ -19,8 +19,17 @@ $feature-flags: (ui-shell: true);
 }
 
 .table-cell {
-  &__supported {
-    fill: $inverse-support-02;
+  &__checkmark {
+
+    &.--supported {
+      fill: $inverse-support-02;
+    }
+
+    &.--not-supported {
+      fill: $inverse-support-01;
+    }
+    
+    
   }
 }
 

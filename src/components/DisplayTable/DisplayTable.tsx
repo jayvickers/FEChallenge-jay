@@ -20,7 +20,7 @@ import {
   TableCell
 } from 'carbon-components-react';
 
-import { CheckmarkFilled16, TrashCan32 } from '@carbon/icons-react';
+import { CheckmarkFilled16, TrashCan32, Misuse16 } from '@carbon/icons-react';
 interface IDisplayTableProps {
   deleteRows: (deletedRows: IFormattedDataTableRow[]) => void;
   headers: IHeaderRow[],
@@ -113,7 +113,11 @@ const DisplayTable: React.FC<IDisplayTableProps> = (props: IDisplayTableProps) =
                     {row.cells.map((cell: TCell) => (
                       <TableCell className="table-row__table-cell" key={cell.id + cell.value}>
                         {
-                          cell.value === true ? <CheckmarkFilled16 className="table-cell__supported" /> : cell.value
+                          cell.value === true ?
+                            <CheckmarkFilled16 className="table-cell__checkmark --supported" /> :
+                            cell.value === false ?
+                              <Misuse16 className="table-cell__checkmark --not-supported" /> :
+                              cell.value
                         }
                       </TableCell>
                     ))}
