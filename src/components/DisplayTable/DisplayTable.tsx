@@ -17,7 +17,9 @@ import {
   TableExpandedRow,
   TableExpandHeader,
   TableExpandRow,
-  TableCell
+  TableCell,
+  TableToolbarContent,
+  TableToolbarSearch
 } from 'carbon-components-react';
 
 import { CheckmarkFilled16, TrashCan32, Misuse16 } from '@carbon/icons-react';
@@ -76,6 +78,7 @@ const DisplayTable: React.FC<IDisplayTableProps> = (props: IDisplayTableProps) =
         getRowProps,
         getSelectionProps,
         getBatchActionProps,
+        onInputChange,
         selectedRows
       }: any) => (
         <TableContainer
@@ -83,6 +86,12 @@ const DisplayTable: React.FC<IDisplayTableProps> = (props: IDisplayTableProps) =
           title="JSON Data Table"
           description="Paginated data table with delete and update functionality">
           <TableToolbar className="data-table__toolbar">
+            <TableToolbarContent>
+              <TableToolbarSearch
+                tabIndex={getBatchActionProps().shouldShowBatchActions ? -1 : 0}
+                onChange={onInputChange}
+              />
+            </TableToolbarContent>
             <TableBatchActions className="toolbar__batch-actions" {...getBatchActionProps()} shouldShowBatchActions={selectedRows.length > 0}>
               <TableBatchAction
                 tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
